@@ -32,8 +32,8 @@
           <dt class="col-sm-5 text-secondary">Missed Salary Amount</dt>
           <dd class="col-sm-7">{{ submission.missed_salary_amount if submission.missed_salary_amount is not none else '' }}</dd>
 
-          <dt class="col-sm-5 text-secondary">Rented >2 YY bots</dt>
-          <dd class="col-sm-7">{{ 'Yes' if submission.rented_more_than_2_yy_bots else 'No' }}</dd>
+          <dt class="col-sm-5 text-secondary">Owed YY bots</dt>
+          <dd class="col-sm-7">{{ 'Yes' if submission.owed_yy_bots else 'No' }}</dd>
 
           <dt class="col-sm-5 text-secondary">Owed Fortibots tickets</dt>
           <dd class="col-sm-7">{{ 'Yes' if submission.owed_fortibots_tickets else 'No' }}</dd>
@@ -41,6 +41,38 @@
           <dt class="col-sm-5 text-secondary">Ticket amount owed</dt>
           <dd class="col-sm-7">{{ submission.fortibots_ticket_amount if submission.fortibots_ticket_amount is not none else '' }}</dd>
         </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card rounded-4">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h2 class="h5 fw-semibold mb-0">YY Bots</h2>
+          <span class="badge text-bg-secondary">{{ submission.yy_bots|length }}</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-dark table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Bot name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for b in submission.yy_bots %}
+              <tr>
+                <td class="fw-semibold">{{ b.bot_name }}</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td class="text-center text-secondary py-3">No YY bots.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

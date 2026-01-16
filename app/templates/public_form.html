@@ -48,9 +48,42 @@
             <div class="col-md-6">
               <div class="pt-4">
                 <div class="form-check form-switch">
-                  {{ form.rented_more_than_2_yy_bots(class_="form-check-input", role="switch") }}
-                  <label class="form-check-label" for="{{ form.rented_more_than_2_yy_bots.id }}">Did you rent more than 2 YY bots?</label>
+                  {{ form.owed_yy_bots(class_="form-check-input", role="switch", id="owedYyBotsToggle") }}
+                  <label class="form-check-label" for="owedYyBotsToggle">Are you owed any YY bots?</label>
                 </div>
+              </div>
+            </div>
+
+            <div class="col-12" id="owedYyBotsDetails" style="display:none;">
+              <div class="muted-hint mb-2">Enter all YY bots purchased here.</div>
+
+              {% if form.yy_bots.errors %}
+                <div class="alert alert-warning mt-2 mb-3">
+                  {{ form.yy_bots.errors[0] }}
+                </div>
+              {% endif %}
+
+              <div id="yyBotsContainer" data-max="14" data-count="{{ form.yy_bots|length }}">
+                {% for entry in form.yy_bots %}
+                  <div class="input-group mb-2 yy-bot-row" data-index="{{ loop.index0 }}">
+                    {{ entry(class_="form-control " + ("is-invalid" if entry.errors else ""), placeholder="YY bot name") }}
+                  </div>
+                  {% if entry.errors %}
+                    <div class="invalid-feedback d-block">{{ entry.errors[0] }}</div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+
+              <template id="yyBotRowTemplate">
+                <div class="input-group mb-2 yy-bot-row" data-index="__INDEX__">
+                  <input class="form-control" type="text" name="yy_bots-__INDEX__" id="yy_bots-__INDEX__" placeholder="YY bot name">
+                </div>
+              </template>
+
+              <div class="d-flex justify-content-start mt-2">
+                <button type="button" class="btn btn-outline-info btn-sm" id="addYyBotBtn">
+                  + Add YY bot
+                </button>
               </div>
             </div>
 
@@ -172,5 +205,6 @@
 <script src="{{ url_for('static', filename='js/form.js') }}"></script>
 <script>
   window.__INITIAL_TICKETS_CHECKED__ = {{ 'true' if form.owed_fortibots_tickets.data else 'false' }};
+  window.__INITIAL_YY_BOTS_CHECKED__ = {{ 'true' if form.owed_yy_bots.data else 'false' }};
 </script>
 {% endblock %}
