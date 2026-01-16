@@ -6,6 +6,7 @@ import click
 from flask import Flask
 
 from . import db
+from .db_migrations import ensure_schema
 from .models import User
 
 
@@ -14,6 +15,7 @@ def register_cli(app: Flask) -> None:
     def init_db():
         """Create database tables."""
         db.create_all()
+        ensure_schema()
         click.echo("Database initialized.")
 
     @app.cli.command("create-admin")
