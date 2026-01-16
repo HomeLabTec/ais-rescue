@@ -53,6 +53,10 @@
     const on = !!owedYyToggle.checked;
     yyBotsWrap.style.display = on ? '' : 'none';
 
+    if (on && yyBotsContainer.querySelectorAll('.yy-bot-row').length === 0) {
+      addYyBotRow();
+    }
+
     const inputs = yyBotsContainer.querySelectorAll('input[name^="yy_bots-"]');
     inputs.forEach((input, idx) => {
       if (on && idx === 0) {
