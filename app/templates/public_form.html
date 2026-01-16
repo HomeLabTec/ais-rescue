@@ -106,6 +106,45 @@
             </div>
 
             <div class="col-12">
+              <div class="form-check form-switch">
+                {{ form.pending_withdraws(class_="form-check-input", role="switch", id="pendingWithdrawsToggle") }}
+                <label class="form-check-label" for="pendingWithdrawsToggle">Did you initiate any withdraws that have not been processed yet?</label>
+              </div>
+              <div id="pendingWithdrawsDetails" class="mt-3" style="display:none;">
+                <label class="form-label">Withdraw dates</label>
+
+                {% if form.withdraw_dates.errors %}
+                  <div class="alert alert-warning mt-2 mb-3">
+                    {{ form.withdraw_dates.errors[0] }}
+                  </div>
+                {% endif %}
+
+                <div id="withdrawDatesContainer" data-max="2" data-count="{{ form.withdraw_dates|length }}">
+                  {% for entry in form.withdraw_dates %}
+                    <div class="input-group mb-2 withdraw-date-row" data-index="{{ loop.index0 }}">
+                      {{ entry(class_="form-control " + ("is-invalid" if entry.errors else ""), type="date") }}
+                    </div>
+                    {% if entry.errors %}
+                      <div class="invalid-feedback d-block">{{ entry.errors[0] }}</div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+
+                <template id="withdrawDateRowTemplate">
+                  <div class="input-group mb-2 withdraw-date-row" data-index="__INDEX__">
+                    <input class="form-control" type="date" name="withdraw_dates-__INDEX__" id="withdraw_dates-__INDEX__">
+                  </div>
+                </template>
+
+                <div class="d-flex justify-content-start mt-2">
+                  <button type="button" class="btn btn-outline-info btn-sm" id="addWithdrawDateBtn">
+                    + Add another withdraw date
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
               <hr class="border-secondary-subtle my-2">
             </div>
 
@@ -206,5 +245,6 @@
 <script>
   window.__INITIAL_TICKETS_CHECKED__ = {{ 'true' if form.owed_fortibots_tickets.data else 'false' }};
   window.__INITIAL_YY_BOTS_CHECKED__ = {{ 'true' if form.owed_yy_bots.data else 'false' }};
+  window.__INITIAL_PENDING_WITHDRAWS_CHECKED__ = {{ 'true' if form.pending_withdraws.data else 'false' }};
 </script>
 {% endblock %}

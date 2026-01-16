@@ -3,7 +3,17 @@ from __future__ import annotations
 from decimal import Decimal
 
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, DecimalField, FieldList, FormField, PasswordField, SelectField, StringField, SubmitField
+from wtforms import (
+    BooleanField,
+    DateField,
+    DecimalField,
+    FieldList,
+    FormField,
+    PasswordField,
+    SelectField,
+    StringField,
+    SubmitField,
+)
 from wtforms.validators import DataRequired, Length, Optional, ValidationError, NumberRange
 
 
@@ -46,6 +56,9 @@ class PublicSubmissionForm(FlaskForm):
         validators=[Optional(), NumberRange(min=0, message="Amount must be 0 or greater")],
     )
 
+    pending_withdraws = BooleanField("Did you initiate any withdraws that have not been processed yet?")
+    withdraw_dates = FieldList(DateField("Withdraw date", validators=[Optional()]), min_entries=1, max_entries=2)
+
     subsidy_bots = FieldList(FormField(BotEntryForm), min_entries=1, max_entries=100)
 
     submit = SubmitField("Submit")
@@ -79,6 +92,19 @@ class PublicSubmissionForm(FlaskForm):
 
         if errors:
             raise ValidationError("Please fix the Subsidy Bots section.")
+
+    def validate_withdraw_dates(self, field):
+        if not self.pending_withdraws.data:
+            return
+
+        any_date = False
+        for entry in field.entries:
+            if entry.data is not None:
+                any_date = True
+                break
+
+        if not any_date:
+            raise ValidationError("Please enter at least one withdraw date when pending withdraws are selected.")
 
     def validate_yy_bots(self, field):
         if not self.owed_yy_bots.data:
