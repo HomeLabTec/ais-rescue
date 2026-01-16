@@ -28,7 +28,7 @@
 
             <div class="col-md-6">
               <label class="form-label" for="{{ form.s_level.id }}">S Level <span class="text-info">*</span></label>
-              {{ form.s_level(class_="form-control " + ("is-invalid" if form.s_level.errors else ""), placeholder="e.g., S1") }}
+              {{ form.s_level(class_="form-select " + ("is-invalid" if form.s_level.errors else "")) }}
               {% if form.s_level.errors %}
                 <div class="invalid-feedback">{{ form.s_level.errors[0] }}</div>
               {% endif %}

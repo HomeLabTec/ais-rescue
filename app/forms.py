@@ -3,7 +3,7 @@ from __future__ import annotations
 from decimal import Decimal
 
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, DecimalField, FieldList, FormField, PasswordField, StringField, SubmitField
+from wtforms import BooleanField, DecimalField, FieldList, FormField, PasswordField, SelectField, StringField, SubmitField
 from wtforms.validators import DataRequired, Length, Optional, ValidationError, NumberRange
 
 
@@ -22,7 +22,11 @@ class BotEntryForm(FlaskForm):
 
 class PublicSubmissionForm(FlaskForm):
     uid = StringField("UID", validators=[DataRequired(), Length(max=128)])
-    s_level = StringField("S Level", validators=[DataRequired(), Length(max=32)])
+    s_level = SelectField(
+        "S Level",
+        choices=[(f"S{level}", f"S{level}") for level in range(9)],
+        validators=[DataRequired()],
+    )
 
     missed_salary_amount = DecimalField(
         "Missed Salary Amount",
