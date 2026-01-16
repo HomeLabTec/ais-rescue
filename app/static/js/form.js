@@ -13,6 +13,12 @@
   const addYyBotBtn = document.getElementById('addYyBotBtn');
   const yyBotTemplate = document.getElementById('yyBotRowTemplate');
 
+  const pendingWithdrawsToggle = document.getElementById('pendingWithdrawsToggle');
+  const pendingWithdrawsWrap = document.getElementById('pendingWithdrawsDetails');
+  const withdrawDatesContainer = document.getElementById('withdrawDatesContainer');
+  const addWithdrawDateBtn = document.getElementById('addWithdrawDateBtn');
+  const withdrawDateTemplate = document.getElementById('withdrawDateRowTemplate');
+
   function getExistingMaxIndex() {
     const rows = botsContainer ? botsContainer.querySelectorAll('.bot-row') : [];
     let max = -1;
@@ -25,6 +31,7 @@
 
   let nextIndex = botsContainer ? (getExistingMaxIndex() + 1) : 0;
   let nextYyIndex = 0;
+  let nextWithdrawIndex = 0;
 
   function updateTicketVisibility() {
     if (!owedToggle || !owedAmountWrap || !owedAmountInput) return;
@@ -58,6 +65,57 @@
     }
 
     const inputs = yyBotsContainer.querySelectorAll('input[name^="yy_bots-"]');
+    inputs.forEach((input, idx) => {
+      if (on && idx === 0) {
+        input.setAttribute('required', 'required');
+      } else {
+        input.removeAttribute('required');
+        if (!on) input.value = '';
+      }
+    });
+  }
+
+  function getExistingWithdrawMaxIndex() {
+    const rows = withdrawDatesContainer ? withdrawDatesContainer.querySelectorAll('.withdraw-date-row') : [];
+    let max = -1;
+    rows.forEach((row) => {
+      const idx = parseInt(row.getAttribute('data-index'), 10);
+      if (!Number.isNaN(idx)) max = Math.max(max, idx);
+    });
+    return max;
+  }
+
+  function addWithdrawDateRow() {
+    if (!withdrawDatesContainer || !withdrawDateTemplate) return;
+
+    const max = parseInt(withdrawDatesContainer.getAttribute('data-max') || '2', 10);
+    const currentRows = withdrawDatesContainer.querySelectorAll('.withdraw-date-row').length;
+    if (currentRows >= max) {
+      alert(`Max of ${max} withdraw dates reached.`);
+      return;
+    }
+
+    const html = withdrawDateTemplate.innerHTML.replaceAll('__INDEX__', String(nextWithdrawIndex));
+    nextWithdrawIndex += 1;
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html.trim();
+    const rowEl = wrapper.firstElementChild;
+    if (!rowEl) return;
+
+    withdrawDatesContainer.appendChild(rowEl);
+  }
+
+  function updateWithdrawVisibility() {
+    if (!pendingWithdrawsToggle || !pendingWithdrawsWrap || !withdrawDatesContainer) return;
+    const on = !!pendingWithdrawsToggle.checked;
+    pendingWithdrawsWrap.style.display = on ? '' : 'none';
+
+    if (on && withdrawDatesContainer.querySelectorAll('.withdraw-date-row').length === 0) {
+      addWithdrawDateRow();
+    }
+
+    const inputs = withdrawDatesContainer.querySelectorAll('input[name^="withdraw_dates-"]');
     inputs.forEach((input, idx) => {
       if (on && idx === 0) {
         input.setAttribute('required', 'required');
@@ -163,12 +221,24 @@
     addYyBotBtn.addEventListener('click', addYyBotRow);
   }
 
+  if (withdrawDatesContainer) {
+    nextWithdrawIndex = getExistingWithdrawMaxIndex() + 1;
+  }
+
+  if (addWithdrawDateBtn) {
+    addWithdrawDateBtn.addEventListener('click', addWithdrawDateRow);
+  }
+
   if (owedToggle) {
     owedToggle.addEventListener('change', updateTicketVisibility);
   }
 
   if (owedYyToggle) {
     owedYyToggle.addEventListener('change', updateYyVisibility);
+  }
+
+  if (pendingWithdrawsToggle) {
+    pendingWithdrawsToggle.addEventListener('change', updateWithdrawVisibility);
   }
 
   // initial state
@@ -178,6 +248,10 @@
   if (typeof window.__INITIAL_YY_BOTS_CHECKED__ !== 'undefined') {
     if (owedYyToggle) owedYyToggle.checked = !!window.__INITIAL_YY_BOTS_CHECKED__;
   }
+  if (typeof window.__INITIAL_PENDING_WITHDRAWS_CHECKED__ !== 'undefined') {
+    if (pendingWithdrawsToggle) pendingWithdrawsToggle.checked = !!window.__INITIAL_PENDING_WITHDRAWS_CHECKED__;
+  }
   updateTicketVisibility();
   updateYyVisibility();
+  updateWithdrawVisibility();
 })();
