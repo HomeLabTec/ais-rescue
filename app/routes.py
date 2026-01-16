@@ -8,7 +8,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 
 from . import db
 from .forms import PublicSubmissionForm, LoginForm
-from .models import Submission, SubsidyBot, User
+from .models import Submission, SubsidyBot, User, YyBot
 
 
 public_bp = Blueprint("public", __name__)
@@ -33,7 +33,7 @@ def index():
             uid=form.uid.data.strip(),
             s_level=form.s_level.data,
             missed_salary_amount=form.missed_salary_amount.data,
-            rented_more_than_2_yy_bots=bool(form.rented_more_than_2_yy_bots.data),
+            owed_yy_bots=bool(form.owed_yy_bots.data),
             owed_fortibots_tickets=bool(form.owed_fortibots_tickets.data),
             fortibots_ticket_amount=form.fortibots_ticket_amount.data,
         )
@@ -44,6 +44,12 @@ def index():
             amt = entry.form.subsidy_amount.data
             if name:
                 submission.subsidy_bots.append(SubsidyBot(bot_name=name, subsidy_amount=amt))
+
+        if form.owed_yy_bots.data:
+            for entry in form.yy_bots.entries:
+                name = (entry.data or "").strip()
+                if name:
+                    submission.yy_bots.append(YyBot(bot_name=name))
 
         db.session.add(submission)
         db.session.commit()
@@ -149,7 +155,9 @@ def export_submissions_csv():
                 "uid": s.uid,
                 "s_level": s.s_level,
                 "missed_salary_amount": str(s.missed_salary_amount) if s.missed_salary_amount is not None else "",
-                "rented_more_than_2_yy_bots": "yes" if s.rented_more_than_2_yy_bots else "no",
+                "owed_yy_bots": "yes" if s.owed_yy_bots else "no",
+                "yy_bot_count": len(s.yy_bots),
+                "yy_bot_names": ", ".join(bot.bot_name for bot in s.yy_bots),
                 "owed_fortibots_tickets": "yes" if s.owed_fortibots_tickets else "no",
                 "fortibots_ticket_amount": str(s.fortibots_ticket_amount) if s.fortibots_ticket_amount is not None else "",
                 "bot_count": len(s.subsidy_bots),
@@ -162,7 +170,9 @@ def export_submissions_csv():
         "uid",
         "s_level",
         "missed_salary_amount",
-        "rented_more_than_2_yy_bots",
+        "owed_yy_bots",
+        "yy_bot_count",
+        "yy_bot_names",
         "owed_fortibots_tickets",
         "fortibots_ticket_amount",
         "bot_count",
@@ -203,10 +213,12 @@ def export_flat_csv():
                     "uid": s.uid,
                     "s_level": s.s_level,
                     "missed_salary_amount": str(s.missed_salary_amount) if s.missed_salary_amount is not None else "",
-                    "rented_more_than_2_yy_bots": "yes" if s.rented_more_than_2_yy_bots else "no",
+                    "owed_yy_bots": "yes" if s.owed_yy_bots else "no",
                     "owed_fortibots_tickets": "yes" if s.owed_fortibots_tickets else "no",
                     "fortibots_ticket_amount": str(s.fortibots_ticket_amount) if s.fortibots_ticket_amount is not None else "",
+                    "yy_bot_names": ", ".join(bot.bot_name for bot in s.yy_bots),
                     "bot_name": "",
+                    "yy_bot_name": "",
                     "subsidy_amount": "",
                 }
             )
@@ -219,9 +231,11 @@ def export_flat_csv():
                         "uid": s.uid,
                         "s_level": s.s_level,
                         "missed_salary_amount": str(s.missed_salary_amount) if s.missed_salary_amount is not None else "",
-                        "rented_more_than_2_yy_bots": "yes" if s.rented_more_than_2_yy_bots else "no",
+                        "owed_yy_bots": "yes" if s.owed_yy_bots else "no",
                         "owed_fortibots_tickets": "yes" if s.owed_fortibots_tickets else "no",
                         "fortibots_ticket_amount": str(s.fortibots_ticket_amount) if s.fortibots_ticket_amount is not None else "",
+                        "yy_bot_names": ", ".join(bot.bot_name for bot in s.yy_bots),
+                        "yy_bot_name": "",
                         "bot_name": b.bot_name,
                         "subsidy_amount": str(b.subsidy_amount),
                     }
@@ -233,9 +247,11 @@ def export_flat_csv():
         "uid",
         "s_level",
         "missed_salary_amount",
-        "rented_more_than_2_yy_bots",
+        "owed_yy_bots",
         "owed_fortibots_tickets",
         "fortibots_ticket_amount",
+        "yy_bot_names",
+        "yy_bot_name",
         "bot_name",
         "subsidy_amount",
     ]

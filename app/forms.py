@@ -35,7 +35,8 @@ class PublicSubmissionForm(FlaskForm):
         validators=[Optional(), NumberRange(min=0, message="Amount must be 0 or greater")],
     )
 
-    rented_more_than_2_yy_bots = BooleanField("Did you rent more than 2 YY bots?")
+    owed_yy_bots = BooleanField("Are you owed any YY bots?")
+    yy_bots = FieldList(StringField("YY bot name", validators=[Optional(), Length(max=128)]), min_entries=1, max_entries=14)
 
     owed_fortibots_tickets = BooleanField("Are you owed any tickets for renting Fortibots?")
     fortibots_ticket_amount = DecimalField(
@@ -78,6 +79,19 @@ class PublicSubmissionForm(FlaskForm):
 
         if errors:
             raise ValidationError("Please fix the Subsidy Bots section.")
+
+    def validate_yy_bots(self, field):
+        if not self.owed_yy_bots.data:
+            return
+
+        any_bot = False
+        for entry in field.entries:
+            if (entry.data or "").strip():
+                any_bot = True
+                break
+
+        if not any_bot:
+            raise ValidationError("Please enter at least one YY bot when owed.")
 
 
 class LoginForm(FlaskForm):

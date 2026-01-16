@@ -41,7 +41,7 @@ class Submission(db.Model):
 
     missed_salary_amount = db.Column(db.Numeric(12, 2), nullable=True)
 
-    rented_more_than_2_yy_bots = db.Column(db.Boolean, nullable=False, default=False)
+    owed_yy_bots = db.Column(db.Boolean, nullable=False, default=False)
 
     owed_fortibots_tickets = db.Column(db.Boolean, nullable=False, default=False)
     fortibots_ticket_amount = db.Column(db.Numeric(12, 2), nullable=True)
@@ -50,6 +50,13 @@ class Submission(db.Model):
 
     subsidy_bots = db.relationship(
         "SubsidyBot",
+        back_populates="submission",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
+
+    yy_bots = db.relationship(
+        "YyBot",
         back_populates="submission",
         cascade="all, delete-orphan",
         lazy="selectin",
@@ -66,3 +73,14 @@ class SubsidyBot(db.Model):
     subsidy_amount = db.Column(db.Numeric(12, 2), nullable=False)
 
     submission = db.relationship("Submission", back_populates="subsidy_bots")
+
+
+class YyBot(db.Model):
+    __tablename__ = "yy_bots"
+
+    id = db.Column(db.Integer, primary_key=True)
+    submission_id = db.Column(db.Integer, db.ForeignKey("submissions.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    bot_name = db.Column(db.String(128), nullable=False)
+
+    submission = db.relationship("Submission", back_populates="yy_bots")

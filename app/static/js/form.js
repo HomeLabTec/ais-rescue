@@ -7,6 +7,12 @@
   const owedAmountWrap = document.getElementById('owedTicketsAmount');
   const owedAmountInput = document.getElementById('fortibots_ticket_amount');
 
+  const owedYyToggle = document.getElementById('owedYyBotsToggle');
+  const yyBotsWrap = document.getElementById('owedYyBotsDetails');
+  const yyBotsContainer = document.getElementById('yyBotsContainer');
+  const addYyBotBtn = document.getElementById('addYyBotBtn');
+  const yyBotTemplate = document.getElementById('yyBotRowTemplate');
+
   function getExistingMaxIndex() {
     const rows = botsContainer ? botsContainer.querySelectorAll('.bot-row') : [];
     let max = -1;
@@ -18,6 +24,7 @@
   }
 
   let nextIndex = botsContainer ? (getExistingMaxIndex() + 1) : 0;
+  let nextYyIndex = 0;
 
   function updateTicketVisibility() {
     if (!owedToggle || !owedAmountWrap || !owedAmountInput) return;
@@ -29,6 +36,32 @@
       owedAmountInput.removeAttribute('required');
       owedAmountInput.value = '';
     }
+  }
+
+  function getExistingYyMaxIndex() {
+    const rows = yyBotsContainer ? yyBotsContainer.querySelectorAll('.yy-bot-row') : [];
+    let max = -1;
+    rows.forEach((row) => {
+      const idx = parseInt(row.getAttribute('data-index'), 10);
+      if (!Number.isNaN(idx)) max = Math.max(max, idx);
+    });
+    return max;
+  }
+
+  function updateYyVisibility() {
+    if (!owedYyToggle || !yyBotsWrap || !yyBotsContainer) return;
+    const on = !!owedYyToggle.checked;
+    yyBotsWrap.style.display = on ? '' : 'none';
+
+    const inputs = yyBotsContainer.querySelectorAll('input[name^="yy_bots-"]');
+    inputs.forEach((input, idx) => {
+      if (on && idx === 0) {
+        input.setAttribute('required', 'required');
+      } else {
+        input.removeAttribute('required');
+        if (!on) input.value = '';
+      }
+    });
   }
 
   function wireBotRow(rowEl) {
@@ -88,6 +121,27 @@
     wireBotRow(rowEl);
   }
 
+  function addYyBotRow() {
+    if (!yyBotsContainer || !yyBotTemplate) return;
+
+    const max = parseInt(yyBotsContainer.getAttribute('data-max') || '14', 10);
+    const currentRows = yyBotsContainer.querySelectorAll('.yy-bot-row').length;
+    if (currentRows >= max) {
+      alert(`Max of ${max} YY bots reached.`);
+      return;
+    }
+
+    const html = yyBotTemplate.innerHTML.replaceAll('__INDEX__', String(nextYyIndex));
+    nextYyIndex += 1;
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html.trim();
+    const rowEl = wrapper.firstElementChild;
+    if (!rowEl) return;
+
+    yyBotsContainer.appendChild(rowEl);
+  }
+
   // Init
   if (botsContainer) {
     botsContainer.querySelectorAll('.bot-row').forEach(wireBotRow);
@@ -97,13 +151,29 @@
     addBotBtn.addEventListener('click', addBotRow);
   }
 
+  if (yyBotsContainer) {
+    nextYyIndex = getExistingYyMaxIndex() + 1;
+  }
+
+  if (addYyBotBtn) {
+    addYyBotBtn.addEventListener('click', addYyBotRow);
+  }
+
   if (owedToggle) {
     owedToggle.addEventListener('change', updateTicketVisibility);
+  }
+
+  if (owedYyToggle) {
+    owedYyToggle.addEventListener('change', updateYyVisibility);
   }
 
   // initial state
   if (typeof window.__INITIAL_TICKETS_CHECKED__ !== 'undefined') {
     if (owedToggle) owedToggle.checked = !!window.__INITIAL_TICKETS_CHECKED__;
   }
+  if (typeof window.__INITIAL_YY_BOTS_CHECKED__ !== 'undefined') {
+    if (owedYyToggle) owedYyToggle.checked = !!window.__INITIAL_YY_BOTS_CHECKED__;
+  }
   updateTicketVisibility();
+  updateYyVisibility();
 })();
