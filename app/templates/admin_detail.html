@@ -40,6 +40,18 @@
 
           <dt class="col-sm-5 text-secondary">Ticket amount owed</dt>
           <dd class="col-sm-7">{{ submission.fortibots_ticket_amount if submission.fortibots_ticket_amount is not none else '' }}</dd>
+
+          <dt class="col-sm-5 text-secondary">Pending withdraws</dt>
+          <dd class="col-sm-7">{{ 'Yes' if submission.pending_withdraws else 'No' }}</dd>
+
+          <dt class="col-sm-5 text-secondary">Withdraw dates</dt>
+          <dd class="col-sm-7">
+            {% if submission.withdraw_dates_list() %}
+              {{ submission.withdraw_dates_list()|join(', ') }}
+            {% else %}
+              <span class="text-secondary">None</span>
+            {% endif %}
+          </dd>
         </dl>
       </div>
     </div>

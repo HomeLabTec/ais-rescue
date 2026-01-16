@@ -46,6 +46,8 @@ class Submission(db.Model):
 
     owed_fortibots_tickets = db.Column(db.Boolean, nullable=False, default=False)
     fortibots_ticket_amount = db.Column(db.Numeric(12, 2), nullable=True)
+    pending_withdraws = db.Column(db.Boolean, nullable=False, default=False)
+    withdraw_dates = db.Column(db.String(255), nullable=True)
 
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False, index=True)
 
@@ -62,6 +64,11 @@ class Submission(db.Model):
         cascade="all, delete-orphan",
         lazy="selectin",
     )
+
+    def withdraw_dates_list(self) -> list[str]:
+        if not self.withdraw_dates:
+            return []
+        return [entry.strip() for entry in self.withdraw_dates.split(",") if entry.strip()]
 
 
 class SubsidyBot(db.Model):
