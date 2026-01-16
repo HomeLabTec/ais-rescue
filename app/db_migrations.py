@@ -17,6 +17,10 @@ def ensure_schema() -> None:
         alterations.append(
             "ALTER TABLE submissions ADD COLUMN owed_yy_bots BOOLEAN NOT NULL DEFAULT 0"
         )
+    if "rented_more_than_2_yy_bots" not in columns:
+        alterations.append(
+            "ALTER TABLE submissions ADD COLUMN rented_more_than_2_yy_bots BOOLEAN NOT NULL DEFAULT 0"
+        )
     if "owed_fortibots_tickets" not in columns:
         alterations.append(
             "ALTER TABLE submissions ADD COLUMN owed_fortibots_tickets BOOLEAN NOT NULL DEFAULT 0"

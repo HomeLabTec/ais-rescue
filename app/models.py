@@ -42,6 +42,7 @@ class Submission(db.Model):
     missed_salary_amount = db.Column(db.Numeric(12, 2), nullable=True)
 
     owed_yy_bots = db.Column(db.Boolean, nullable=False, default=False)
+    rented_more_than_2_yy_bots = db.Column(db.Boolean, nullable=False, default=False)
 
     owed_fortibots_tickets = db.Column(db.Boolean, nullable=False, default=False)
     fortibots_ticket_amount = db.Column(db.Numeric(12, 2), nullable=True)
