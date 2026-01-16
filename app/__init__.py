@@ -29,6 +29,12 @@ def create_app() -> Flask:
     login_manager.init_app(app)
     csrf.init_app(app)
 
+    with app.app_context():
+        from .db_migrations import ensure_schema
+
+        db.create_all()
+        ensure_schema()
+
     login_manager.login_view = "admin.login"
     login_manager.login_message_category = "warning"
 
