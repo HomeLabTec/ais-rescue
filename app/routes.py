@@ -24,9 +24,14 @@ def index():
         form.subsidy_bots.append_entry()
 
     if form.validate_on_submit():
+        existing_submission = Submission.query.filter_by(uid=form.uid.data.strip()).first()
+        if existing_submission:
+            form.uid.errors.append("UID already exists. Please use a unique UID.")
+            return render_template("public_form.html", form=form)
+
         submission = Submission(
             uid=form.uid.data.strip(),
-            s_level=form.s_level.data.strip(),
+            s_level=form.s_level.data,
             missed_salary_amount=form.missed_salary_amount.data,
             rented_more_than_2_yy_bots=bool(form.rented_more_than_2_yy_bots.data),
             owed_fortibots_tickets=bool(form.owed_fortibots_tickets.data),
