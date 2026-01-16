@@ -37,6 +37,13 @@ def index():
             rented_more_than_2_yy_bots=False,
             owed_fortibots_tickets=bool(form.owed_fortibots_tickets.data),
             fortibots_ticket_amount=form.fortibots_ticket_amount.data,
+            pending_withdraws=bool(form.pending_withdraws.data),
+            withdraw_dates=", ".join(
+                entry.data.isoformat()
+                for entry in form.withdraw_dates.entries
+                if entry.data is not None
+            )
+            or None,
         )
 
         # Add bots (only rows with bot_name)
@@ -161,6 +168,8 @@ def export_submissions_csv():
                 "yy_bot_names": ", ".join(bot.bot_name for bot in s.yy_bots),
                 "owed_fortibots_tickets": "yes" if s.owed_fortibots_tickets else "no",
                 "fortibots_ticket_amount": str(s.fortibots_ticket_amount) if s.fortibots_ticket_amount is not None else "",
+                "pending_withdraws": "yes" if s.pending_withdraws else "no",
+                "withdraw_dates": ", ".join(s.withdraw_dates_list()),
                 "bot_count": len(s.subsidy_bots),
             }
         )
@@ -176,6 +185,8 @@ def export_submissions_csv():
         "yy_bot_names",
         "owed_fortibots_tickets",
         "fortibots_ticket_amount",
+        "pending_withdraws",
+        "withdraw_dates",
         "bot_count",
     ]
     return _csv_response("submissions.csv", rows, fieldnames)
@@ -217,6 +228,8 @@ def export_flat_csv():
                     "owed_yy_bots": "yes" if s.owed_yy_bots else "no",
                     "owed_fortibots_tickets": "yes" if s.owed_fortibots_tickets else "no",
                     "fortibots_ticket_amount": str(s.fortibots_ticket_amount) if s.fortibots_ticket_amount is not None else "",
+                    "pending_withdraws": "yes" if s.pending_withdraws else "no",
+                    "withdraw_dates": ", ".join(s.withdraw_dates_list()),
                     "yy_bot_names": ", ".join(bot.bot_name for bot in s.yy_bots),
                     "bot_name": "",
                     "yy_bot_name": "",
@@ -235,6 +248,8 @@ def export_flat_csv():
                         "owed_yy_bots": "yes" if s.owed_yy_bots else "no",
                         "owed_fortibots_tickets": "yes" if s.owed_fortibots_tickets else "no",
                         "fortibots_ticket_amount": str(s.fortibots_ticket_amount) if s.fortibots_ticket_amount is not None else "",
+                        "pending_withdraws": "yes" if s.pending_withdraws else "no",
+                        "withdraw_dates": ", ".join(s.withdraw_dates_list()),
                         "yy_bot_names": ", ".join(bot.bot_name for bot in s.yy_bots),
                         "yy_bot_name": "",
                         "bot_name": b.bot_name,
@@ -251,6 +266,8 @@ def export_flat_csv():
         "owed_yy_bots",
         "owed_fortibots_tickets",
         "fortibots_ticket_amount",
+        "pending_withdraws",
+        "withdraw_dates",
         "yy_bot_names",
         "yy_bot_name",
         "bot_name",

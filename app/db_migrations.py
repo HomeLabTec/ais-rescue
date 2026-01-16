@@ -29,6 +29,14 @@ def ensure_schema() -> None:
         alterations.append(
             "ALTER TABLE submissions ADD COLUMN fortibots_ticket_amount NUMERIC(12, 2)"
         )
+    if "pending_withdraws" not in columns:
+        alterations.append(
+            "ALTER TABLE submissions ADD COLUMN pending_withdraws BOOLEAN NOT NULL DEFAULT 0"
+        )
+    if "withdraw_dates" not in columns:
+        alterations.append(
+            "ALTER TABLE submissions ADD COLUMN withdraw_dates VARCHAR(255)"
+        )
 
     for statement in alterations:
         db.session.execute(text(statement))
