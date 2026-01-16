@@ -1,0 +1,37 @@
+:root {
+  --card-bg: rgba(255, 255, 255, 0.03);
+}
+
+body {
+  background: radial-gradient(1200px 600px at 20% 0%, rgba(0, 123, 255, 0.10), transparent 60%),
+              radial-gradient(1000px 500px at 80% 10%, rgba(32, 201, 151, 0.08), transparent 60%),
+              #0b0f14;
+}
+
+.card {
+  background-color: var(--card-bg) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.form-control, .form-select {
+  background-color: rgba(0, 0, 0, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+}
+
+.form-control:focus, .form-select:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+
+.muted-hint {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.table thead th {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.badge-soft {
+  background-color: rgba(13, 110, 253, 0.15);
+  border: 1px solid rgba(13, 110, 253, 0.35);
+}

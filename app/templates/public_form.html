@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% set title = "Submit" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9 col-xl-8">
+    <div class="card rounded-4">
+      <div class="card-body p-4 p-md-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h1 class="h3 mb-1 fw-semibold">Data collection form</h1>
+            <div class="muted-hint">Required: UID, S Level, and at least 1 Subsidy Bot.</div>
+          </div>
+          <span class="badge badge-soft rounded-pill px-3 py-2">Dark mode</span>
+        </div>
+
+        <form method="POST" novalidate>
+          {{ form.hidden_tag() }}
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" for="{{ form.uid.id }}">UID <span class="text-info">*</span></label>
+              {{ form.uid(class_="form-control " + ("is-invalid" if form.uid.errors else ""), placeholder="e.g., 12345") }}
+              {% if form.uid.errors %}
+                <div class="invalid-feedback">{{ form.uid.errors[0] }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label" for="{{ form.s_level.id }}">S Level <span class="text-info">*</span></label>
+              {{ form.s_level(class_="form-control " + ("is-invalid" if form.s_level.errors else ""), placeholder="e.g., S1") }}
+              {% if form.s_level.errors %}
+                <div class="invalid-feedback">{{ form.s_level.errors[0] }}</div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label" for="{{ form.missed_salary_amount.id }}">Missed Salary Amount</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                {{ form.missed_salary_amount(class_="form-control " + ("is-invalid" if form.missed_salary_amount.errors else ""), inputmode="decimal", placeholder="0.00") }}
+                {% if form.missed_salary_amount.errors %}
+                  <div class="invalid-feedback d-block">{{ form.missed_salary_amount.errors[0] }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="pt-4">
+                <div class="form-check form-switch">
+                  {{ form.rented_more_than_2_yy_bots(class_="form-check-input", role="switch") }}
+                  <label class="form-check-label" for="{{ form.rented_more_than_2_yy_bots.id }}">Did you rent more than 2 YY bots?</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <hr class="border-secondary-subtle my-2">
+            </div>
+
+            <div class="col-12">
+              <div class="form-check form-switch">
+                {{ form.owed_fortibots_tickets(class_="form-check-input", role="switch", id="owedTicketsToggle") }}
+                <label class="form-check-label" for="owedTicketsToggle">Are you owed any tickets for renting Fortibots?</label>
+              </div>
+              <div id="owedTicketsAmount" class="mt-3" style="display:none;">
+                <label class="form-label" for="{{ form.fortibots_ticket_amount.id }}">Ticket amount owed</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  {{ form.fortibots_ticket_amount(class_="form-control " + ("is-invalid" if form.fortibots_ticket_amount.errors else ""), inputmode="decimal", placeholder="0.00") }}
+                </div>
+                {% if form.fortibots_ticket_amount.errors %}
+                  <div class="invalid-feedback d-block">{{ form.fortibots_ticket_amount.errors[0] }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="col-12">
+              <hr class="border-secondary-subtle my-2">
+            </div>
+
+            <div class="col-12">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <h2 class="h5 mb-1 fw-semibold">Subsidy Bots</h2>
+                  <div class="muted-hint">Enter a bot name and its subsidy amount. Add as many as needed (max 100).</div>
+                </div>
+                <button type="button" class="btn btn-outline-info" id="addBotBtn">
+                  + Add Bot
+                </button>
+              </div>
+
+              {% if form.subsidy_bots.errors %}
+                <div class="alert alert-warning mt-3 mb-0">
+                  {{ form.subsidy_bots.errors[0] }}
+                </div>
+              {% endif %}
+
+              <div class="mt-3" id="botsContainer" data-max="100" data-count="{{ form.subsidy_bots|length }}">
+                {% for entry in form.subsidy_bots %}
+                  <div class="card rounded-4 mb-3 bot-row" data-index="{{ loop.index0 }}">
+                    <div class="card-body p-3">
+                      <div class="row g-2 align-items-end">
+                        <div class="col-md-7">
+                          <label class="form-label">Bot name <span class="text-info">*</span></label>
+                          {{ entry.form.bot_name(class_="form-control " + ("is-invalid" if entry.form.bot_name.errors else ""), placeholder="e.g., Bot-Alpha") }}
+                          {% if entry.form.bot_name.errors %}
+                            <div class="invalid-feedback">{{ entry.form.bot_name.errors[0] }}</div>
+                          {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Amount of subsidy <span class="text-info">*</span></label>
+                          <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            {{ entry.form.subsidy_amount(class_="form-control " + ("is-invalid" if entry.form.subsidy_amount.errors else ""), inputmode="decimal", placeholder="0.00") }}
+                          </div>
+                          {% if entry.form.subsidy_amount.errors %}
+                            <div class="invalid-feedback d-block">{{ entry.form.subsidy_amount.errors[0] }}</div>
+                          {% endif %}
+                        </div>
+                        <div class="col-md-1 d-grid">
+                          <button type="button" class="btn btn-outline-secondary remove-bot" {% if loop.index0 == 0 %}disabled{% endif %} title="Remove">&times;</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+
+              <!-- Prototype row used by JS (names will be replaced) -->
+              <template id="botRowTemplate">
+                <div class="card rounded-4 mb-3 bot-row" data-index="__INDEX__">
+                  <div class="card-body p-3">
+                    <div class="row g-2 align-items-end">
+                      <div class="col-md-7">
+                        <label class="form-label">Bot name <span class="text-info">*</span></label>
+                        <input class="form-control" type="text" name="subsidy_bots-__INDEX__-bot_name" id="subsidy_bots-__INDEX__-bot_name" placeholder="e.g., Bot-Alpha">
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Amount of subsidy <span class="text-info">*</span></label>
+                        <div class="input-group">
+                          <span class="input-group-text">$</span>
+                          <input class="form-control" type="text" inputmode="decimal" name="subsidy_bots-__INDEX__-subsidy_amount" id="subsidy_bots-__INDEX__-subsidy_amount" placeholder="0.00">
+                        </div>
+                      </div>
+                      <div class="col-md-1 d-grid">
+                        <button type="button" class="btn btn-outline-secondary remove-bot" title="Remove">&times;</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+
+            <div class="col-12">
+              <div class="d-grid d-md-flex gap-2 justify-content-md-end mt-2">
+                <button type="submit" class="btn btn-info btn-lg px-4">Submit</button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/form.js') }}"></script>
+<script>
+  window.__INITIAL_TICKETS_CHECKED__ = {{ 'true' if form.owed_fortibots_tickets.data else 'false' }};
+</script>
+{% endblock %}

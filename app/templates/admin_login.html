@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% set title = "Admin Login" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card rounded-4">
+      <div class="card-body p-4 p-md-5">
+        <h1 class="h4 fw-semibold mb-1">Admin sign in</h1>
+        <p class="muted-hint mb-4">Log in to view and export submissions.</p>
+
+        <form method="POST" novalidate>
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.username.id }}">Username</label>
+            {{ form.username(class_="form-control " + ("is-invalid" if form.username.errors else ""), autocomplete="username") }}
+            {% if form.username.errors %}
+              <div class="invalid-feedback">{{ form.username.errors[0] }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.password.id }}">Password</label>
+            {{ form.password(class_="form-control " + ("is-invalid" if form.password.errors else ""), autocomplete="current-password") }}
+            {% if form.password.errors %}
+              <div class="invalid-feedback">{{ form.password.errors[0] }}</div>
+            {% endif %}
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-info btn-lg">Sign in</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="text-center mt-3 muted-hint">
+      Tip: create an admin user with <code>flask create-admin</code>
+    </div>
+  </div>
+</div>
+{% endblock %}

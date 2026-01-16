@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% set title = "Thanks" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card rounded-4">
+      <div class="card-body p-4 p-md-5 text-center">
+        <h1 class="h3 fw-semibold mb-2">Submission received</h1>
+        <p class="muted-hint mb-4">Thank you. Your data was saved.</p>
+        <a class="btn btn-info" href="{{ url_for('public.index') }}">Submit another</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
