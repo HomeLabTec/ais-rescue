@@ -34,6 +34,7 @@ def index():
             s_level=form.s_level.data,
             missed_salary_amount=form.missed_salary_amount.data,
             owed_yy_bots=bool(form.owed_yy_bots.data),
+            rented_more_than_2_yy_bots=False,
             owed_fortibots_tickets=bool(form.owed_fortibots_tickets.data),
             fortibots_ticket_amount=form.fortibots_ticket_amount.data,
         )
