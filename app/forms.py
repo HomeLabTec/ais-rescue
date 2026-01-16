@@ -14,7 +14,7 @@ from wtforms import (
     StringField,
     SubmitField,
 )
-from wtforms.validators import DataRequired, Length, Optional, ValidationError, NumberRange
+from wtforms.validators import DataRequired, Length, Optional, ValidationError, NumberRange, Regexp
 
 
 class BotEntryForm(FlaskForm):
@@ -31,7 +31,14 @@ class BotEntryForm(FlaskForm):
 
 
 class PublicSubmissionForm(FlaskForm):
-    uid = StringField("UID", validators=[DataRequired(), Length(max=128)])
+    uid = StringField(
+        "UID",
+        validators=[
+            DataRequired(),
+            Length(min=7, max=7, message="UID must be exactly 7 numbers."),
+            Regexp(r"^\d{7}$", message="UID must be exactly 7 numbers."),
+        ],
+    )
     s_level = SelectField(
         "S Level",
         choices=[(f"S{level}", f"S{level}") for level in range(9)],

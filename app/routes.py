@@ -213,49 +213,30 @@ def export_bots_csv():
 @admin_bp.route("/export/flat.csv")
 @login_required
 def export_flat_csv():
-    """One row per (submission, bot) to keep the export analyzable in Excel."""
+    """One row per submission with flattened lists for exports."""
     submissions = Submission.query.order_by(Submission.created_at.asc()).all()
     rows = []
     for s in submissions:
-        if not s.subsidy_bots:
-            rows.append(
-                {
-                    "submission_id": s.id,
-                    "created_at": s.created_at.isoformat() if s.created_at else "",
-                    "uid": s.uid,
-                    "s_level": s.s_level,
-                    "missed_salary_amount": str(s.missed_salary_amount) if s.missed_salary_amount is not None else "",
-                    "owed_yy_bots": "yes" if s.owed_yy_bots else "no",
-                    "owed_fortibots_tickets": "yes" if s.owed_fortibots_tickets else "no",
-                    "fortibots_ticket_amount": str(s.fortibots_ticket_amount) if s.fortibots_ticket_amount is not None else "",
-                    "pending_withdraws": "yes" if s.pending_withdraws else "no",
-                    "withdraw_dates": ", ".join(s.withdraw_dates_list()),
-                    "yy_bot_names": ", ".join(bot.bot_name for bot in s.yy_bots),
-                    "bot_name": "",
-                    "yy_bot_name": "",
-                    "subsidy_amount": "",
-                }
-            )
-        else:
-            for b in s.subsidy_bots:
-                rows.append(
-                    {
-                        "submission_id": s.id,
-                        "created_at": s.created_at.isoformat() if s.created_at else "",
-                        "uid": s.uid,
-                        "s_level": s.s_level,
-                        "missed_salary_amount": str(s.missed_salary_amount) if s.missed_salary_amount is not None else "",
-                        "owed_yy_bots": "yes" if s.owed_yy_bots else "no",
-                        "owed_fortibots_tickets": "yes" if s.owed_fortibots_tickets else "no",
-                        "fortibots_ticket_amount": str(s.fortibots_ticket_amount) if s.fortibots_ticket_amount is not None else "",
-                        "pending_withdraws": "yes" if s.pending_withdraws else "no",
-                        "withdraw_dates": ", ".join(s.withdraw_dates_list()),
-                        "yy_bot_names": ", ".join(bot.bot_name for bot in s.yy_bots),
-                        "yy_bot_name": "",
-                        "bot_name": b.bot_name,
-                        "subsidy_amount": str(b.subsidy_amount),
-                    }
-                )
+        bot_names = ", ".join(bot.bot_name for bot in s.subsidy_bots)
+        subsidy_amounts = ", ".join(str(bot.subsidy_amount) for bot in s.subsidy_bots)
+        rows.append(
+            {
+                "submission_id": s.id,
+                "created_at": s.created_at.isoformat() if s.created_at else "",
+                "uid": s.uid,
+                "s_level": s.s_level,
+                "missed_salary_amount": str(s.missed_salary_amount) if s.missed_salary_amount is not None else "",
+                "owed_yy_bots": "yes" if s.owed_yy_bots else "no",
+                "owed_fortibots_tickets": "yes" if s.owed_fortibots_tickets else "no",
+                "fortibots_ticket_amount": str(s.fortibots_ticket_amount) if s.fortibots_ticket_amount is not None else "",
+                "pending_withdraws": "yes" if s.pending_withdraws else "no",
+                "withdraw_dates": ", ".join(s.withdraw_dates_list()),
+                "yy_bot_names": ", ".join(bot.bot_name for bot in s.yy_bots),
+                "yy_bot_name": "",
+                "bot_name": bot_names,
+                "subsidy_amount": subsidy_amounts,
+            }
+        )
 
     fieldnames = [
         "submission_id",
