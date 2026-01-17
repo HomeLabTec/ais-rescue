@@ -10,7 +10,7 @@ This is a Flask app you can run on Linux that collects form submissions into a S
 - Did you rent more than 2 YY bots? (yes/no)
 - Are you owed any tickets for renting Fortibots? (yes/no)
   - If yes, a Ticket Amount field appears and becomes required
-- **Subsidy Bots ONLY** (required: at least 1)
+- Subsidy Bots (optional)
   - Bot name + Subsidy amount per row
   - Add up to 100 total rows (1 initial + up to 99 more)
 
