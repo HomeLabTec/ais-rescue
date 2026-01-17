@@ -76,7 +76,6 @@ class PublicSubmissionForm(FlaskForm):
                 raise ValidationError("Ticket amount is required when Fortibots tickets are owed.")
 
     def validate_subsidy_bots(self, field):
-        any_bot = False
         errors = False
 
         for entry in field.entries:
@@ -84,7 +83,6 @@ class PublicSubmissionForm(FlaskForm):
             amt = entry.form.subsidy_amount.data
 
             if name:
-                any_bot = True
                 if amt is None:
                     entry.form.subsidy_amount.errors.append("Amount is required when a bot name is entered.")
                     errors = True
@@ -93,9 +91,6 @@ class PublicSubmissionForm(FlaskForm):
                 if amt is not None:
                     entry.form.bot_name.errors.append("Bot name is required when an amount is entered.")
                     errors = True
-
-        if not any_bot:
-            raise ValidationError("At least one Subsidy Bot is required.")
 
         if errors:
             raise ValidationError("Please fix the Subsidy Bots section.")
